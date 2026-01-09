@@ -9,7 +9,7 @@
     /* =============== CORE STYLES =============== */
     :root {
       --glass: rgba(255, 255, 255, 0.05);
-      --glass-heavy: rgba(255, 255, 255, 0.1);
+      --glass-heavy: rgba(255, 255, 255, 0.12);
       --glass-border: rgba(255, 255, 255, 0.1);
       --accent: #7e00ff;
       --accent-glow: rgba(126, 0, 255, 0.3);
@@ -88,7 +88,7 @@
     #display { font-size: clamp(2.5rem, 8vw, 4.5rem); text-align: right; font-weight: 200; letter-spacing: -2px; overflow-x: auto; white-space: nowrap; }
 
     /* =============== PANEL GRIDS =============== */
-    .panel { display: none; flex: 1; overflow-y: auto; }
+    .panel { display: none; flex: 1; overflow-y: auto; position: relative; }
     .panel.show { display: flex; flex-direction: column; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -116,10 +116,12 @@
       min-width: 0;
     }
 
-    /* Trigonometry Tab UI */
+    /* =============== TRIGONOMETRY POPOVER (SHADCN STYLE) =============== */
     .trig-tab {
         grid-column: span 4;
+        position: relative; /* Anchor for absolute child */
         margin-bottom: 8px;
+        z-index: 50;
     }
     .trig-header {
         display: flex;
@@ -136,23 +138,45 @@
         font-weight: 500;
     }
     .trig-header:hover { background: var(--glass-heavy); color: #fff; }
-    .trig-header i.arrow { transition: transform 0.3s; }
+    .trig-header i.arrow { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .trig-header.open { border-color: var(--accent); color: #fff; }
     .trig-header.open i.arrow { transform: rotate(180deg); }
 
     .trig-content {
         display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
-        padding-top: 8px;
+        padding: 12px;
+        background: rgba(15, 15, 18, 0.9);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        z-index: 100;
+        animation: slideDown 0.2s cubic-bezier(0, 0, 0.2, 1);
+    }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     .trig-content.show { display: grid; }
     .trig-content button {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
         font-size: 0.85rem;
         min-height: 48px;
+        border-radius: 8px;
+    }
+    .trig-content button:hover {
+        background: var(--accent);
+        border-color: transparent;
     }
 
-    /* =============== SHADCN INSPIRED TOOL UI =============== */
+    /* =============== TOOL UI =============== */
     .tool-container {
       background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(30px);
       padding: 32px; border-radius: 16px; border: 1px solid var(--glass-border);
@@ -176,23 +200,19 @@
     }
     select:focus, input:focus { border-color: #52525b; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
 
-    /* Date Picker Specifics: White Style */
+    /* Date Picker */
     input[type="date"] {
       background-color: #ffffff;
       color: #09090b;
       font-weight: 500;
       border: 1px solid #e4e4e7;
-      color-scheme: light; /* Ensures the browser-provided calendar popup is legible */
+      color-scheme: light;
     }
     input[type="date"]:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px var(--accent-glow);
     }
-    /* Style the calendar icon for webkit browsers */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(0); /* Ensure icon stays dark on light background */
-      cursor: pointer;
-    }
+    input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
 
     .result-card {
       padding: 24px; background: #18181b; border: 1px solid #27272a;
@@ -208,7 +228,6 @@
     }
     .calc-btn:hover { background: #e4e4e7; transform: translateY(-1px); }
 
-    /* Mobile Responsive */
     @media (max-width: 600px) {
       #app { padding: 12px; padding-top: 75px; }
       .btn-grid { gap: 6px; }
@@ -262,7 +281,7 @@
     <section class="panel" id="panel-scientific">
       <div class="btn-grid sci-grid">
         
-        <!-- Trigonometry Tab -->
+        <!-- Trigonometry Overlapping Popover -->
         <div class="trig-tab">
             <div class="trig-header" id="trig-toggle">
                 <span><i class="ri-triangle-line"></i> Trigonometry</span>
@@ -278,13 +297,11 @@
             </div>
         </div>
 
-        <!-- Row 1 -->
         <button data-key="π">π</button>
         <button data-key="log(">log</button>
         <button data-key="ln(">ln</button>
         <button data-key="√(">√</button>
         
-        <!-- Row 2 -->
         <button data-key="^2">x²</button>
         <button data-key="^">xʸ</button>
         <button data-key="!">n!</button>
@@ -293,31 +310,20 @@
           <button data-key=")">)</button>
         </div>
 
-        <!-- Row 3 -->
-        <button data-key="7">7</button>
-        <button data-key="8">8</button>
-        <button data-key="9">9</button>
+        <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
         <button data-key="+" class="accent">+</button>
 
-        <!-- Row 4 -->
-        <button data-key="4">4</button>
-        <button data-key="5">5</button>
-        <button data-key="6">6</button>
+        <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
         <button data-key="/" class="accent">÷</button>
 
-        <!-- Row 5 -->
-        <button data-key="1">1</button>
-        <button data-key="2">2</button>
-        <button data-key="3">3</button>
+        <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
         <button data-key="*" class="accent">×</button>
 
-        <!-- Row 6 -->
         <button data-key="C" class="danger">AC</button>
         <button data-key="0">0</button>
         <button data-key="." class="accent">.</button>
         <button data-key="-" class="accent">−</button>
 
-        <!-- Row 7: Special Buttons and Equal -->
         <button data-key="10^">10ˣ</button>
         <button data-key="e">e</button>
         <button data-key="1/">1/x</button>
@@ -325,7 +331,7 @@
       </div>
     </section>
 
-    <!-- Converter & Date Panels -->
+    <!-- Converter -->
     <section class="panel" id="panel-converter">
         <div class="tool-container">
             <div class="input-group">
@@ -366,6 +372,7 @@
           </div>
     </section>
 
+    <!-- Date Calculation -->
     <section class="panel" id="panel-date">
         <div class="tool-container">
             <div class="dual-inputs">
@@ -388,7 +395,7 @@
   </main>
 
   <script>
-    /* Navigation & Sidebar UI */
+    /* Navigation */
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menu-toggle');
     const displaySection = document.getElementById('display-section');
@@ -405,83 +412,72 @@
         panels.forEach(p => p.classList.remove('show'));
         document.getElementById(target).classList.add('show');
         
-        if (target === 'panel-converter' || target === 'panel-date') {
-          displaySection.classList.add('hidden');
-        } else {
-          displaySection.classList.remove('hidden');
-        }
+        displaySection.classList.toggle('hidden', target === 'panel-converter' || target === 'panel-date');
         if (window.innerWidth < 800) sidebar.classList.remove('open');
       };
     });
 
-    /* Trig Tab Logic */
+    /* Popover Logic: Trigonometry */
     const trigToggle = document.getElementById('trig-toggle');
     const trigPanel = document.getElementById('trig-panel');
-    trigToggle.onclick = () => {
+    
+    trigToggle.onclick = (e) => {
+        e.stopPropagation();
         trigToggle.classList.toggle('open');
         trigPanel.classList.toggle('show');
+    };
+
+    // Close popover when clicking outside
+    window.onclick = () => {
+        trigToggle.classList.remove('open');
+        trigPanel.classList.remove('show');
     };
 
     /* Calculator Logic */
     const display = document.getElementById('display');
     let expr = "";
-
     const operators = ['+', '-', '*', '/', '.', '^', '^2'];
 
     document.querySelectorAll('button[data-key]').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = (e) => {
+        if (btn.closest('.trig-content')) e.stopPropagation(); // Keep panel open on click if preferred
+        
         const key = btn.dataset.key;
         const lastChar = expr.slice(-1);
 
-        if (key === 'C') {
-          expr = "";
-        } else if (key === 'back') {
-          expr = expr.slice(0, -1);
-        } else if (key === '=') {
+        if (key === 'C') { expr = ""; }
+        else if (key === 'back') { expr = expr.slice(0, -1); }
+        else if (key === '=') {
           try {
             if (!expr) return;
             let processed = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'Math.PI').replace(/e/g, 'Math.E');
-            
-            // Standard Trig
-            processed = processed.replace(/sin\(/g, 'Math.sin(');
-            processed = processed.replace(/cos\(/g, 'Math.cos(');
-            processed = processed.replace(/tan\(/g, 'Math.tan(');
-            
-            // Reciprocal Trig
-            processed = processed.replace(/cosec\(/g, '(1/Math.sin(');
-            processed = processed.replace(/sec\(/g, '(1/Math.cos(');
-            processed = processed.replace(/cot\(/g, '(1/Math.tan(');
-
+            processed = processed.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan(');
+            processed = processed.replace(/cosec\(/g, '(1/Math.sin(').replace(/sec\(/g, '(1/Math.cos(').replace(/cot\(/g, '(1/Math.tan(');
             processed = processed.replace(/log\(/g, 'Math.log10(').replace(/ln\(/g, 'Math.log(').replace(/√\(/g, 'Math.sqrt(');
-            
-            // 10^x and Factorial
             processed = processed.replace(/10\^/g, '10**');
             processed = processed.replace(/(\d+)!/g, (match, n) => {
-                let f = 1;
-                for (let i = 1; i <= n; i++) f *= i;
-                return f;
+                let f = 1; for (let i = 1; i <= n; i++) f *= i; return f;
             });
-
             const openBrackets = (processed.match(/\(/g) || []).length;
             const closeBrackets = (processed.match(/\)/g) || []).length;
             for(let i = 0; i < (openBrackets - closeBrackets); i++) processed += ')';
-
             let result = eval(processed);
             expr = Number.isFinite(result) ? parseFloat(result.toFixed(8)).toString() : "Error";
           } catch { expr = "Error"; }
         } 
         else {
-          const isCurrentKeyOperator = operators.includes(key);
-          const isLastCharOperator = operators.includes(lastChar);
-
-          if (isCurrentKeyOperator && isLastCharOperator) return;
-          
+          if (operators.includes(key) && operators.includes(lastChar)) return;
           if (key === '^2') expr += "**2";
           else if (key === '^') expr += "**";
           else expr += key;
         }
-        
         display.innerText = expr || "0";
+        
+        // Auto-close trig panel after selecting a function
+        if (btn.closest('.trig-content')) {
+            trigToggle.classList.remove('open');
+            trigPanel.classList.remove('show');
+        }
       };
     });
 
@@ -525,7 +521,6 @@
       const from = fromSelect.value;
       const to = toSelect.value;
       let res = 0;
-
       if (cat === 'temperature') {
         let c = val;
         if (from === 'Fahrenheit') c = (val - 32) * 5/9;
@@ -534,8 +529,7 @@
         if (to === 'Fahrenheit') res = (c * 9/5) + 32;
         else if (to === 'Kelvin') res = c + 273.15;
       } else {
-        const base = val * convData[cat][from];
-        res = base / convData[cat][to];
+        res = (val * convData[cat][from]) / convData[cat][to];
       }
       resultP.innerText = `${val} ${from} equals`;
       resultH2.innerText = `${res.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${to}`;
@@ -553,11 +547,9 @@
         document.getElementById('date-output').innerText = "Select Dates";
         return;
       }
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
       document.getElementById('date-output').innerText = `${diffDays} Days`;
     };
-    
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date-from').value = today;
     document.getElementById('date-to').value = today;
