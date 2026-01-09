@@ -116,6 +116,42 @@
       min-width: 0;
     }
 
+    /* Trigonometry Tab UI */
+    .trig-tab {
+        grid-column: span 4;
+        margin-bottom: 8px;
+    }
+    .trig-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #a1a1aa;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .trig-header:hover { background: var(--glass-heavy); color: #fff; }
+    .trig-header i.arrow { transition: transform 0.3s; }
+    .trig-header.open i.arrow { transform: rotate(180deg); }
+
+    .trig-content {
+        display: none;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding-top: 8px;
+    }
+    .trig-content.show { display: grid; }
+    .trig-content button {
+        background: rgba(255, 255, 255, 0.03);
+        font-size: 0.85rem;
+        min-height: 48px;
+    }
+
     /* =============== SHADCN INSPIRED TOOL UI =============== */
     .tool-container {
       background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(30px);
@@ -128,7 +164,6 @@
     
     .dual-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-    /* ShadCN style input/select */
     select, input {
       width: 100%; padding: 12px 16px; background: #09090b;
       border: 1px solid #27272a; border-radius: 8px;
@@ -141,10 +176,23 @@
     }
     select:focus, input:focus { border-color: #52525b; box-shadow: 0 0 0 2px rgba(255,255,255,0.05); }
 
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1); cursor: pointer; opacity: 0.7;
+    /* Date Picker Specifics: White Style */
+    input[type="date"] {
+      background-color: #ffffff;
+      color: #09090b;
+      font-weight: 500;
+      border: 1px solid #e4e4e7;
+      color-scheme: light; /* Ensures the browser-provided calendar popup is legible */
     }
-    input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+    input[type="date"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+    /* Style the calendar icon for webkit browsers */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0); /* Ensure icon stays dark on light background */
+      cursor: pointer;
+    }
 
     .result-card {
       padding: 24px; background: #18181b; border: 1px solid #27272a;
@@ -204,7 +252,7 @@
         <button data-key="-">−</button>
         <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
         <button data-key="+">+</button>
-        <button data-key="0" style="grid-column: span 1">0</button>
+        <button data-key="0">0</button>
         <button data-key=".">.</button>
         <button data-key="=" class="accent">=</button>
       </div>
@@ -213,56 +261,72 @@
     <!-- Panel: Scientific Calculator -->
     <section class="panel" id="panel-scientific">
       <div class="btn-grid sci-grid">
-        <!-- Row 1 -->
-        <button data-key="sin(">sin</button>
-        <button data-key="cos(">cos</button>
-        <button data-key="tan(">tan</button>
-        <button data-key="π">π</button>
         
-        <!-- Row 2 -->
+        <!-- Trigonometry Tab -->
+        <div class="trig-tab">
+            <div class="trig-header" id="trig-toggle">
+                <span><i class="ri-triangle-line"></i> Trigonometry</span>
+                <i class="ri-arrow-down-s-line arrow"></i>
+            </div>
+            <div class="trig-content" id="trig-panel">
+                <button data-key="sin(">sin</button>
+                <button data-key="cos(">cos</button>
+                <button data-key="tan(">tan</button>
+                <button data-key="cosec(">csc</button>
+                <button data-key="sec(">sec</button>
+                <button data-key="cot(">cot</button>
+            </div>
+        </div>
+
+        <!-- Row 1 -->
+        <button data-key="π">π</button>
         <button data-key="log(">log</button>
         <button data-key="ln(">ln</button>
         <button data-key="√(">√</button>
-        <button data-key="^2">x²</button>
         
-        <!-- Row 3: New + button and Joined Brackets -->
+        <!-- Row 2 -->
+        <button data-key="^2">x²</button>
         <button data-key="^">xʸ</button>
         <button data-key="!">n!</button>
         <div class="half-btn-container">
           <button data-key="(">(</button>
           <button data-key=")">)</button>
         </div>
-        <button data-key="+" class="accent">+</button>
 
-        <!-- Row 4 -->
+        <!-- Row 3 -->
         <button data-key="7">7</button>
         <button data-key="8">8</button>
         <button data-key="9">9</button>
-        <button data-key="/" class="accent">÷</button>
+        <button data-key="+" class="accent">+</button>
 
-        <!-- Row 5 -->
+        <!-- Row 4 -->
         <button data-key="4">4</button>
         <button data-key="5">5</button>
         <button data-key="6">6</button>
-        <button data-key="*" class="accent">×</button>
+        <button data-key="/" class="accent">÷</button>
 
-        <!-- Row 6 -->
+        <!-- Row 5 -->
         <button data-key="1">1</button>
         <button data-key="2">2</button>
         <button data-key="3">3</button>
-        <button data-key="-" class="accent">−</button>
+        <button data-key="*" class="accent">×</button>
 
-        <!-- Row 7 -->
+        <!-- Row 6 -->
         <button data-key="C" class="danger">AC</button>
         <button data-key="0">0</button>
         <button data-key="." class="accent">.</button>
+        <button data-key="-" class="accent">−</button>
+
+        <!-- Row 7: Special Buttons and Equal -->
+        <button data-key="10^">10ˣ</button>
+        <button data-key="e">e</button>
+        <button data-key="1/">1/x</button>
         <button data-key="=" class="accent">=</button>
       </div>
     </section>
 
-    <!-- Converter & Date Panels remain unchanged as per request -->
+    <!-- Converter & Date Panels -->
     <section class="panel" id="panel-converter">
-        <!-- ... converter content ... -->
         <div class="tool-container">
             <div class="input-group">
               <label>Category</label>
@@ -272,13 +336,15 @@
                 <option value="temperature">Temperature</option>
                 <option value="area">Area</option>
                 <option value="time">Time</option>
+                <option value="volume">Volume</option>
                 <option value="energy">Energy</option>
+                <option value="speed">Speed</option>
                 <option value="power">Power</option>
+                <option value="data">Data</option>
                 <option value="pressure">Pressure</option>
                 <option value="angle">Angle</option>
               </select>
             </div>
-            
             <div class="dual-inputs">
               <div class="input-group">
                 <label>From</label>
@@ -289,12 +355,10 @@
                 <select id="conv-to"></select>
               </div>
             </div>
-    
             <div class="input-group">
               <label>Value</label>
               <input type="number" id="conv-value" value="1" step="any">
             </div>
-    
             <div class="result-card">
               <p id="conv-label">Resulting conversion</p>
               <h2 id="conv-result">1.00</h2>
@@ -350,11 +414,18 @@
       };
     });
 
+    /* Trig Tab Logic */
+    const trigToggle = document.getElementById('trig-toggle');
+    const trigPanel = document.getElementById('trig-panel');
+    trigToggle.onclick = () => {
+        trigToggle.classList.toggle('open');
+        trigPanel.classList.toggle('show');
+    };
+
     /* Calculator Logic */
     const display = document.getElementById('display');
     let expr = "";
 
-    // List of operators that shouldn't repeat
     const operators = ['+', '-', '*', '/', '.', '^', '^2'];
 
     document.querySelectorAll('button[data-key]').forEach(btn => {
@@ -369,31 +440,41 @@
         } else if (key === '=') {
           try {
             if (!expr) return;
-            let processed = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'Math.PI');
-            processed = processed.replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(').replace(/tan\(/g, 'Math.tan(');
+            let processed = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/π/g, 'Math.PI').replace(/e/g, 'Math.E');
+            
+            // Standard Trig
+            processed = processed.replace(/sin\(/g, 'Math.sin(');
+            processed = processed.replace(/cos\(/g, 'Math.cos(');
+            processed = processed.replace(/tan\(/g, 'Math.tan(');
+            
+            // Reciprocal Trig
+            processed = processed.replace(/cosec\(/g, '(1/Math.sin(');
+            processed = processed.replace(/sec\(/g, '(1/Math.cos(');
+            processed = processed.replace(/cot\(/g, '(1/Math.tan(');
+
             processed = processed.replace(/log\(/g, 'Math.log10(').replace(/ln\(/g, 'Math.log(').replace(/√\(/g, 'Math.sqrt(');
+            
+            // 10^x and Factorial
+            processed = processed.replace(/10\^/g, '10**');
             processed = processed.replace(/(\d+)!/g, (match, n) => {
                 let f = 1;
                 for (let i = 1; i <= n; i++) f *= i;
                 return f;
             });
 
-            // Handle potential trailing operators before eval
-            if (operators.includes(lastChar)) processed = processed.slice(0, -1);
-            
+            const openBrackets = (processed.match(/\(/g) || []).length;
+            const closeBrackets = (processed.match(/\)/g) || []).length;
+            for(let i = 0; i < (openBrackets - closeBrackets); i++) processed += ')';
+
             let result = eval(processed);
             expr = Number.isFinite(result) ? parseFloat(result.toFixed(8)).toString() : "Error";
           } catch { expr = "Error"; }
         } 
         else {
-          // BLOCK REPEATED OPERATORS
           const isCurrentKeyOperator = operators.includes(key);
           const isLastCharOperator = operators.includes(lastChar);
 
-          // If current key is an operator and last char was an operator, don't add it
-          if (isCurrentKeyOperator && isLastCharOperator) {
-              return; // Simply ignore the click
-          }
+          if (isCurrentKeyOperator && isLastCharOperator) return;
           
           if (key === '^2') expr += "**2";
           else if (key === '^') expr += "**";
@@ -404,17 +485,20 @@
       };
     });
 
-    /* Converter Data & Logic */
+    /* Converter Logic */
     const convData = {
       length: { Meters: 1, Kilometers: 1000, Centimeters: 0.01, Millimeters: 0.001, Miles: 1609.34, Feet: 0.3048, Inches: 0.0254 },
       weight: { Kilograms: 1, Grams: 0.001, Milligrams: 0.000001, Pounds: 0.453592, Ounces: 0.0283495 },
       area: { "Sq Meters": 1, "Sq Kilometers": 1000000, Acres: 4046.86, Hectares: 10000, "Sq Feet": 0.0929 },
       time: { Seconds: 1, Minutes: 60, Hours: 3600, Days: 86400, Weeks: 604800 },
-      energy: { Joules: 1, Calories: 4.184, "kW-hr": 3600000, "Electron-volt": 1.6e-19 },
-      power: { Watts: 1, Kilowatts: 1000, Horsepower: 745.7 },
-      pressure: { Pascal: 1, Bar: 100000, PSI: 6894.76, Atmosphere: 101325 },
-      angle: { Degrees: 1, Radians: 57.2958, Gradians: 0.9 },
-      temperature: { Celsius: 'C', Fahrenheit: 'F', Kelvin: 'K' }
+      temperature: { Celsius: 'C', Fahrenheit: 'F', Kelvin: 'K' },
+      volume: { Liters: 1, Milliliters: 0.001, "Cubic Meters": 1000, Gallons: 3.78541, Quarts: 0.946353, Pints: 0.473176, Cups: 0.236588 },
+      energy: { Joules: 1, Kilojoules: 1000, Calories: 4.184, Kilocalories: 4184, "Watt Hours": 3600, "Kilowatt Hours": 3600000, "Electron Volts": 1.60218e-19 },
+      speed: { "Meters/sec": 1, "Kilometers/hour": 0.277778, "Miles/hour": 0.44704, Knots: 0.514444, "Feet/sec": 0.3048 },
+      power: { Watts: 1, Kilowatts: 1000, Megawatts: 1000000, Horsepower: 745.7, "BTU/hour": 0.293071 },
+      data: { Bytes: 1, Kilobytes: 1024, Megabytes: 1048576, Gigabytes: 1073741824, Terabytes: 1099511627776, Bits: 0.125 },
+      pressure: { Pascals: 1, Kilopascals: 1000, Bar: 100000, PSI: 6894.76, Atmospheres: 101325, Torr: 133.322 },
+      angle: { Degrees: 1, Radians: 57.2958, Gradians: 0.9, Arcminutes: 0.0166667, Arcseconds: 0.000277778 }
     };
 
     const catSelect = document.getElementById('conv-category');
@@ -474,7 +558,6 @@
       document.getElementById('date-output').innerText = `${diffDays} Days`;
     };
     
-    // Set default dates
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('date-from').value = today;
     document.getElementById('date-to').value = today;
